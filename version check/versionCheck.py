@@ -53,7 +53,7 @@ def check_versions():
             else:
                 print(f"{software.capitalize()} version mismatch. Go to https://ucsb-cs156.github.io/s24/info/software.html to download the desired: {desired_version}, Current: {current_version}")
         else:
-            print(f"Could not determine {software} version.")
+            print(f"{software} not installed.")
 
     if softwareMatch == maxMatch:
     	print(f"You are good to go! All the best for CS156")
