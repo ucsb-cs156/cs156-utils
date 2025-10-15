@@ -17,10 +17,17 @@ def read_csv(csv_file):
             data[githubid] = row
     return data
 
+DEBUG = True
 
 def get_dokku_appname(dokku_appname_prefix, githubid):
     return f"{dokku_appname_prefix}-{githubid}"
 
+def get_dokku_hostname(student_dict, githubid):
+    team = student_dict[githubid]['TEAMS']
+    # Team number is last two characters of team string
+    team_suffix = team[-2:]
+    return f"dokku-{team_suffix}.cs.ucsb.edu"
+    
 
 def email_csv_string_to_staff_email_set(staff_emails):
     return set([email.strip() for email in staff_emails.split(',')])
@@ -50,9 +57,13 @@ def check_dokku_apps(student_dict, dokku_appname_prefix):
     for githubid, student_info in student_dict.items():
         dokku_appname = get_dokku_appname(dokku_appname_prefix, githubid)
         try:
-            result = subprocess.run(['dokku', 'config:show', dokku_appname], capture_output=True, text=True, check=True)
+            dokku_host = get_dokku_hostname(student_dict, githubid)
+            DEBUG and print(f"Checking {dokku_appname} on {dokku_host}")
+            result = subprocess.run(['ssh', dokku_host, 'dokku', 'config:show', dokku_appname], capture_output=True, text=True, check=True)
             config_output = result.stdout
+            DEBUG and print(f"Config output for {dokku_appname}:\n{config_output}")
             admin_emails_line = next((line for line in config_output.splitlines() if line.startswith('ADMIN_EMAILS=')), None)
+            DEBUG and print(f"ADMIN_EMAILS line: {admin_emails_line}")
             if admin_emails_line:
                 admin_emails_value = admin_emails_line.split('=', 1)[1].strip().strip('"')
                 admin_email_set = set(email.strip() for email in admin_emails_value.split(','))
