@@ -77,15 +77,15 @@ def check_dokku_apps(student_dict, dokku_appname_prefix):
             if admin_emails_set is not None:
                 expected_admin_email_set = student_info['admin_email_set']
                 if admin_emails_set == expected_admin_email_set:
-                    print(f"{dokku_appname}: ADMIN_EMAILS is correct.")
+                    print(f"{student_info['EMAIL']},{student_info['LASTNAME']},{student_info['FIRSTNAME']},{dokku_appname},{dokku_host},0")
                 else:
-                    print(f"{dokku_appname}: ADMIN_EMAILS is INCORRECT.")
-                    print(f"  Expected: {expected_admin_email_set}")
-                    print(f"  Found:    {admin_emails_set}")
+                    missing = expected_admin_email_set - admin_emails_set
+                    print(f"{student_info['EMAIL']},{student_info['LASTNAME']},{student_info['FIRSTNAME']},{dokku_appname},{dokku_host},-10,missing, {','.join(missing)}")
             else:
-                print(f"{dokku_appname}: ADMIN_EMAILS not found in config.")
+                print(f"{student_info['EMAIL']},{student_info['LASTNAME']},{student_info['FIRSTNAME']},{dokku_appname},{dokku_host},0,no ADMIN_EMAILS set")
+
         except subprocess.CalledProcessError as e:
-            print(f"Error retrieving config for {dokku_appname}: {e}")
+            print(f"{student_info['EMAIL']},{student_info['LASTNAME']},{student_info['FIRSTNAME']},{dokku_appname},{dokku_host},0,no app found")
 
 
 def main():
