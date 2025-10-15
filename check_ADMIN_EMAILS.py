@@ -53,6 +53,7 @@ def add_admin_email_set_to_student_dict_entries(student_dict, staff_emails):
     return student_dict
 
 def return_matching_lines(output, prefix):
+    DEBUG and print(f"Looking for lines starting with '{prefix}' in output:\n{output}")
     return [line for line in output.splitlines() if line.startswith(prefix)]
 
 def check_dokku_apps(student_dict, dokku_appname_prefix):
