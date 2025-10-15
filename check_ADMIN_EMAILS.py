@@ -62,7 +62,7 @@ def check_dokku_apps(student_dict, dokku_appname_prefix):
             result = subprocess.run(['ssh', dokku_host, 'dokku', 'config:show', dokku_appname], capture_output=True, text=True, check=True)
             config_output = result.stdout
             DEBUG and print(f"Config output for {dokku_appname}:\n{config_output}")
-            admin_emails_line = next((line for line in config_output.splitlines() if line.startswith('ADMIN_EMAILS=')), None)
+            admin_emails_line = next((line for line in config_output.splitlines() if line.startswith('ADMIN_EMAILS:')), None)
             DEBUG and print(f"ADMIN_EMAILS line: {admin_emails_line}")
             if admin_emails_line:
                 admin_emails_value = admin_emails_line.split('=', 1)[1].strip().strip('"')
