@@ -52,6 +52,9 @@ def add_admin_email_set_to_student_dict_entries(student_dict, staff_emails):
         student_dict[k]['admin_email_set'] = team_to_admin_emails[v['TEAMS']]    
     return student_dict
 
+def return_matching_lines(output, prefix):
+    return [line for line in output.splitlines() if line.startswith(prefix)]
+
 def check_dokku_apps(student_dict, dokku_appname_prefix):
     import subprocess
     for githubid, student_info in student_dict.items():
@@ -62,7 +65,7 @@ def check_dokku_apps(student_dict, dokku_appname_prefix):
             result = subprocess.run(['ssh', dokku_host, 'dokku', 'config:show', dokku_appname], capture_output=True, text=True, check=True)
             config_output = result.stdout
             DEBUG and print(f"Config output for {dokku_appname}:\n{config_output}")
-            admin_emails_line = next((line for line in config_output.splitlines() if line.startswith('ADMIN_EMAILS:')), None)
+            admin_emails_line = return_matching_lines(config_output, 'ADMIN_EMAILS:')[0] if return_matching_lines(config_output, 'ADMIN_EMAILS:') else None
             DEBUG and print(f"ADMIN_EMAILS line: {admin_emails_line}")
             if admin_emails_line:
                 admin_emails_value = admin_emails_line.split('=', 1)[1].strip().strip('"')
