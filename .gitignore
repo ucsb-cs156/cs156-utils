@@ -5,3 +5,6 @@ __pycache__/
 .idea/
 *.log
 .env    
+
+
+*.csv
