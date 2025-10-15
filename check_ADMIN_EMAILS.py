@@ -56,6 +56,12 @@ def return_matching_lines(output, prefix):
     DEBUG and print(f"Looking for lines starting with '{prefix}' in output:\n{output}")
     return [line for line in output.splitlines() if line.startswith(prefix)]
 
+def convert_admin_emails_line_to_set(admin_emails_line):
+    if not admin_emails_line:
+        return None
+    admin_emails_value = admin_emails_line.split(':', 1)[1].strip().strip('"')
+    return set(email.strip() for email in admin_emails_value.split(','))
+
 def check_dokku_apps(student_dict, dokku_appname_prefix):
     import subprocess
     for githubid, student_info in student_dict.items():
@@ -67,17 +73,15 @@ def check_dokku_apps(student_dict, dokku_appname_prefix):
             config_output = result.stdout
             DEBUG and print(f"Config output for {dokku_appname}:\n{config_output}")
             admin_emails_line = return_matching_lines(config_output, 'ADMIN_EMAILS:')[0] if return_matching_lines(config_output, 'ADMIN_EMAILS:') else None
-            DEBUG and print(f"ADMIN_EMAILS line: {admin_emails_line}")
-            if admin_emails_line:
-                admin_emails_value = admin_emails_line.split('=', 1)[1].strip().strip('"')
-                admin_email_set = set(email.strip() for email in admin_emails_value.split(','))
+            admin_emails_set = convert_admin_emails_line_to_set(admin_emails_line)
+            if admin_emails_set is not None:
                 expected_admin_email_set = student_info['admin_email_set']
-                if admin_email_set == expected_admin_email_set:
+                if admin_emails_set == expected_admin_email_set:
                     print(f"{dokku_appname}: ADMIN_EMAILS is correct.")
                 else:
                     print(f"{dokku_appname}: ADMIN_EMAILS is INCORRECT.")
                     print(f"  Expected: {expected_admin_email_set}")
-                    print(f"  Found:    {admin_email_set}")
+                    print(f"  Found:    {admin_emails_set}")
             else:
                 print(f"{dokku_appname}: ADMIN_EMAILS not found in config.")
         except subprocess.CalledProcessError as e:
