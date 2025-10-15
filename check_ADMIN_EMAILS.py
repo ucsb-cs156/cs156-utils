@@ -17,7 +17,7 @@ def read_csv(csv_file):
             data[githubid] = row
     return data
 
-DEBUG = True
+DEBUG = False
 
 def get_dokku_appname(dokku_appname_prefix, githubid):
     return f"{dokku_appname_prefix}-{githubid}"
@@ -100,6 +100,12 @@ def main():
     parser.add_argument('dokku_appname_prefix', help='Prefix for dokku app names (will be followed by hyphen and githubid)')
     # Add an argument for the staff email address
     parser.add_argument('staff_emails', help='Staff email address to check for in ADMIN_EMAILS')
+    # Add a debug flag, default false
+    parser.add_argument('--debug', action='store_true', help='Enable debug output')
+    global DEBUG
+    parser.set_defaults(debug=False)
+    DEBUG = parser.parse_args().debug
+    
     args = parser.parse_args()
 
     ### PARSE THE INPUT AND PREPARE THE DICTIONARY ###
